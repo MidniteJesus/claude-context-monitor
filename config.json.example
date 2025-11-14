@@ -1,0 +1,9 @@
+{
+  "threshold": 0.80,
+  "output_file": "claude.md",
+  "instructions": "Update with current progress, successes, failures, and handoff notes for the next session",
+  "notification_enabled": true,
+  "max_context_tokens": 200000,
+  "log_enabled": true,
+  "log_file": "~/.claude/context-monitor.log"
+}
