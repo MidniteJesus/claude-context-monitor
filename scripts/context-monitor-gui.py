@@ -90,7 +90,16 @@ class SettingsWindow:
         self.window.geometry(f"+{x}+{y}")
 
         # Grab focus after window is fully rendered (fixes WSLg timing issue)
-        self.window.after(100, lambda: self.window.grab_set())
+        # Make it optional in case it fails
+        self.window.after(100, self._try_grab_focus)
+
+    def _try_grab_focus(self):
+        """Try to grab focus, but don't fail if it doesn't work."""
+        try:
+            self.window.grab_set()
+            self.window.focus_force()
+        except Exception as e:
+            print(f"Could not grab focus (non-critical): {e}")
 
     def _build_ui(self):
         """Build the settings interface."""
@@ -352,8 +361,9 @@ class SettingsWindow:
         ctk.set_appearance_mode(choice)
 
     def _on_color_change(self, choice):
-        """Apply color theme immediately."""
-        ctk.set_default_color_theme(choice)
+        """Apply color theme immediately (note: requires restart for full effect)."""
+        # Color theme changes require restart, but we save it for next time
+        pass
 
     def _on_save(self):
         """Save settings to config file."""
@@ -572,17 +582,28 @@ class ContextMonitorGUI:
 
     def _on_settings_saved(self, new_config):
         """Handle settings being saved."""
+        old_config = self.config.copy()
         self.config = new_config
 
         # Apply immediate changes
+
+        # 1. Always on top
         self.root.attributes('-topmost', self.config.get("always_on_top", True))
 
-        # Restart polling if interval changed
-        if hasattr(self, '_polling_active'):
-            # Will pick up new interval on next poll cycle
-            pass
+        # 2. Window size (resize if changed)
+        new_width = self.config.get("window_width", 450)
+        new_height = self.config.get("window_height", 300)
+        old_width = old_config.get("window_width", 450)
+        old_height = old_config.get("window_height", 300)
 
-        print("Settings applied successfully")
+        if new_width != old_width or new_height != old_height:
+            self.root.geometry(f"{new_width}x{new_height}")
+
+        # 3. Appearance mode
+        if self.config.get("appearance_mode") != old_config.get("appearance_mode"):
+            ctk.set_appearance_mode(self.config.get("appearance_mode", "dark"))
+
+        print("Settings applied successfully! (Note: Color theme requires restart)")
 
     def _find_active_session(self):
         """Find the most recent Claude Code session transcript."""
