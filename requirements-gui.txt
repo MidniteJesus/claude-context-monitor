@@ -1,0 +1,5 @@
+# Optional dependencies for GUI version
+# Install with: pip install -r requirements-gui.txt
+
+# File monitoring for real-time updates
+watchdog>=3.0.0

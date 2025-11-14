@@ -12,6 +12,7 @@ Never lose context again! This tool monitors your Claude Code CLI sessions in re
 - ⚙️ **Fully customizable** - Configure instructions, filenames, and behavior via `config.json`
 - 🚀 **Zero maintenance** - Runs automatically in the background
 - 📊 **Activity logging** - Track context usage over time
+- 🖥️ **Optional GUI** - Real-time visual display with color-coded progress bar
 
 ## 🎬 Demo
 
@@ -151,6 +152,59 @@ The hook is configured in `.claude/settings.json`:
   }
 }
 ```
+
+## 🖥️ GUI Mode (Optional)
+
+For real-time visual monitoring, you can run the optional GUI:
+
+### Installation
+
+```bash
+# Install GUI dependency
+pip install -r requirements-gui.txt
+
+# Run the GUI
+python scripts/context-monitor-gui.py
+```
+
+### Features
+
+- **Real-time updates** - Updates automatically as you work with Claude Code
+- **Always-on-top** - Window stays visible above other applications
+- **Color-coded display** - Green → Yellow → Orange → Red as context fills
+- **Progress bar** - Visual representation of context usage
+- **Token breakdown** - See exact token counts
+
+### GUI Configuration
+
+The GUI uses the same `config.json` as the hook. Additional GUI-specific options:
+
+```json
+{
+  "window_width": 400,
+  "window_height": 250,
+  "always_on_top": true,
+  "update_interval": 2
+}
+```
+
+### WSL Users
+
+The GUI works great with WSLg (Windows 11):
+
+```bash
+# Ensure WSLg is up to date
+wsl --update
+
+# Run the GUI
+python scripts/context-monitor-gui.py
+```
+
+The window will appear natively in Windows!
+
+For more details, see [GUI Documentation](docs/GUI.md).
+
+---
 
 ## 📚 Usage Examples
 
