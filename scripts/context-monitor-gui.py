@@ -79,7 +79,6 @@ class SettingsWindow:
 
         # Make modal
         self.window.transient(parent)
-        self.window.grab_set()
 
         # Build UI
         self._build_ui()
@@ -89,6 +88,9 @@ class SettingsWindow:
         x = parent.winfo_x() + (parent.winfo_width() - 500) // 2
         y = parent.winfo_y() + (parent.winfo_height() - 600) // 2
         self.window.geometry(f"+{x}+{y}")
+
+        # Grab focus after window is fully rendered (fixes WSLg timing issue)
+        self.window.after(100, lambda: self.window.grab_set())
 
     def _build_ui(self):
         """Build the settings interface."""
