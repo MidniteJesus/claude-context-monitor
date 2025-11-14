@@ -83,30 +83,53 @@ To disable: Set `"always_on_top": false` in your config.
 
 ## Configuration
 
-The GUI uses the same `config.json` as the hook system. Additional GUI-specific options:
+### Using the Built-in Settings Window
+
+The easiest way to configure the GUI is using the **⚙️ Settings** button in the main window.
+
+**To open settings:**
+1. Click the **⚙️ Settings** button at the bottom of the main window
+2. Adjust settings in the Settings window
+3. Click **Save** to apply and save to config file
+4. Or click **Reset to Defaults** to restore default settings
+
+**Available Settings:**
+
+**Display Settings:**
+- **Theme** - Dark, Light, or System (follows OS theme)
+- **Color Scheme** - Blue, Green, or Dark-blue
+- **Always on top** - Toggle whether window stays above others
+- **Window Size** - Small (400x250), Medium (450x300), or Large (500x350)
+
+**Monitoring Settings:**
+- **Alert Threshold** - Slider from 50% to 100% (default: 80%)
+- **Update Interval** - How often to check for updates in seconds (default: 2)
+- **Enable notifications** - Toggle desktop notifications
+
+**Output Settings:**
+- **Output File** - Filename for context notes (default: claude.md)
+- **Custom Instructions** - What to include in auto-generated notes
+
+All changes are saved to your `config.json` and most apply immediately!
+
+### Manual Configuration (Optional)
+
+You can also edit `config.json` directly if preferred. The GUI uses the same config as the hook system:
 
 ```json
 {
-  "window_width": 400,
-  "window_height": 250,
+  "window_width": 450,
+  "window_height": 300,
   "always_on_top": true,
-  "update_interval": 2
+  "update_interval": 2,
+  "threshold": 0.80,
+  "appearance_mode": "dark",
+  "color_theme": "blue",
+  "notification_enabled": true,
+  "output_file": "claude.md",
+  "instructions": "Update with current progress, successes, failures, and handoff notes"
 }
 ```
-
-### Configuration Options
-
-**`window_width`** (integer, default: 400)
-- Width of the GUI window in pixels
-
-**`window_height`** (integer, default: 250)
-- Height of the GUI window in pixels
-
-**`always_on_top`** (boolean, default: true)
-- Whether window stays above other windows
-
-**`update_interval`** (integer, default: 2)
-- Polling interval in seconds (only used if watchdog is not installed)
 
 ## Platform-Specific Notes
 

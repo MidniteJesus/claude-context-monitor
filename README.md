@@ -170,6 +170,7 @@ python scripts/context-monitor-gui.py
 ### Features
 
 - **Modern dark-mode interface** - Sleek, professional CustomTkinter design
+- **Built-in Settings Window** - Configure everything from the GUI (no JSON editing!)
 - **Real-time updates** - Updates automatically as you work with Claude Code
 - **Cross-platform consistency** - Looks identical on Windows, macOS, and Linux
 - **Always-on-top** - Window stays visible above other applications
@@ -177,19 +178,29 @@ python scripts/context-monitor-gui.py
 - **Smooth animations** - Polished progress bar with dynamic color changes
 - **Large, readable text** - Easy-to-read percentage and token counts
 - **Token breakdown** - See exact token counts
+- **Live theme switching** - Change themes and colors instantly
+- **Customizable thresholds** - Adjust alert percentage with a slider
 
 ### GUI Configuration
 
-The GUI uses the same `config.json` as the hook. Additional GUI-specific options:
+Click the **⚙️ Settings** button in the GUI to configure:
 
-```json
-{
-  "window_width": 450,
-  "window_height": 300,
-  "always_on_top": true,
-  "update_interval": 2
-}
-```
+**Display Settings:**
+- Theme (Dark/Light/System)
+- Color Scheme (Blue/Green/Dark-blue)
+- Always-on-top toggle
+- Window size presets
+
+**Monitoring Settings:**
+- Alert threshold slider (50-100%)
+- Update interval
+- Notification toggle
+
+**Output Settings:**
+- Output filename
+- Custom instructions
+
+All changes are saved automatically to your `config.json`!
 
 ### WSL Users
 
