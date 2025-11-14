@@ -37,7 +37,6 @@ DEFAULT_CONFIG = {
     "update_interval": 2,  # seconds (for polling mode)
     "window_width": 450,
     "window_height": 300,
-    "always_on_top": True,
     "notification_enabled": True,
     "output_file": "claude.md",
     "instructions": "Update with current progress, successes, failures, and handoff notes",
@@ -74,7 +73,7 @@ class SettingsWindow:
         # Create window
         self.window = ctk.CTkToplevel(parent)
         self.window.title("Settings")
-        self.window.geometry("500x600")
+        self.window.geometry("450x700")
         self.window.resizable(False, False)
 
         # Make modal
@@ -85,8 +84,8 @@ class SettingsWindow:
 
         # Center on parent
         self.window.update_idletasks()
-        x = parent.winfo_x() + (parent.winfo_width() - 500) // 2
-        y = parent.winfo_y() + (parent.winfo_height() - 600) // 2
+        x = parent.winfo_x() + (parent.winfo_width() - 450) // 2
+        y = parent.winfo_y() + (parent.winfo_height() - 700) // 2
         self.window.geometry(f"+{x}+{y}")
 
         # Grab focus after window is fully rendered (fixes WSLg timing issue)
@@ -103,7 +102,7 @@ class SettingsWindow:
 
     def _build_ui(self):
         """Build the settings interface."""
-        # Main container with scrollbar
+        # Main frame (no scrollbar needed after removing options)
         main_frame = ctk.CTkFrame(self.window, fg_color="transparent")
         main_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
@@ -144,53 +143,6 @@ class SettingsWindow:
             command=self._on_appearance_change
         )
         self.appearance_menu.pack(side="left")
-
-        # Color Theme
-        color_container = ctk.CTkFrame(display_frame, fg_color="transparent")
-        color_container.pack(fill="x", padx=15, pady=5)
-
-        ctk.CTkLabel(
-            color_container,
-            text="Color Scheme:",
-            font=ctk.CTkFont(size=12)
-        ).pack(side="left", padx=(0, 10))
-
-        self.color_var = ctk.StringVar(value=self.config.get("color_theme", "blue"))
-        self.color_menu = ctk.CTkOptionMenu(
-            color_container,
-            values=["blue", "green", "dark-blue"],
-            variable=self.color_var,
-            command=self._on_color_change
-        )
-        self.color_menu.pack(side="left")
-
-        # Always on Top
-        self.always_on_top_var = ctk.BooleanVar(value=self.config.get("always_on_top", True))
-        self.always_on_top_check = ctk.CTkCheckBox(
-            display_frame,
-            text="Always on top",
-            variable=self.always_on_top_var,
-            font=ctk.CTkFont(size=12)
-        )
-        self.always_on_top_check.pack(anchor="w", padx=15, pady=(5, 10))
-
-        # Window Size
-        size_container = ctk.CTkFrame(display_frame, fg_color="transparent")
-        size_container.pack(fill="x", padx=15, pady=(5, 10))
-
-        ctk.CTkLabel(
-            size_container,
-            text="Window Size:",
-            font=ctk.CTkFont(size=12)
-        ).pack(side="left", padx=(0, 10))
-
-        self.size_var = ctk.StringVar(value=self._get_size_preset())
-        self.size_menu = ctk.CTkOptionMenu(
-            size_container,
-            values=["Small (400x250)", "Medium (450x300)", "Large (500x350)"],
-            variable=self.size_var
-        )
-        self.size_menu.pack(side="left")
 
         # Monitoring Settings Section
         monitor_frame = ctk.CTkFrame(main_frame)
@@ -316,7 +268,9 @@ class SettingsWindow:
             button_frame,
             text="Save",
             command=self._on_save,
-            width=120
+            width=120,
+            fg_color="#4CAF50",
+            hover_color="#45a049"
         )
         self.save_button.pack(side="left", padx=(0, 10))
 
@@ -340,60 +294,43 @@ class SettingsWindow:
         )
         self.cancel_button.pack(side="right")
 
-    def _get_size_preset(self):
-        """Get the current size preset name."""
-        width = self.config.get("window_width", 450)
-        height = self.config.get("window_height", 300)
-
-        if width == 400 and height == 250:
-            return "Small (400x250)"
-        elif width == 500 and height == 350:
-            return "Large (500x350)"
-        else:
-            return "Medium (450x300)"
-
     def _on_threshold_change(self, value):
         """Update threshold label when slider moves."""
         self.threshold_value_label.configure(text=f"{int(value)}%")
 
     def _on_appearance_change(self, choice):
-        """Apply appearance mode immediately."""
+        """Apply appearance mode immediately to all windows."""
         ctk.set_appearance_mode(choice)
-
-    def _on_color_change(self, choice):
-        """Apply color theme immediately (note: requires restart for full effect)."""
-        # Color theme changes require restart, but we save it for next time
-        pass
+        # Also update the parent window
+        if hasattr(self, 'parent'):
+            self.parent.update()
 
     def _on_save(self):
         """Save settings to config file."""
         try:
-            # Parse size preset
-            size_preset = self.size_var.get()
-            if "Small" in size_preset:
-                width, height = 400, 250
-            elif "Large" in size_preset:
-                width, height = 500, 350
-            else:
-                width, height = 450, 300
-
-            # Update config
+            # Update config (keep window size at default)
             self.config["threshold"] = self.threshold_slider.get() / 100
             self.config["update_interval"] = int(self.interval_var.get())
-            self.config["always_on_top"] = self.always_on_top_var.get()
             self.config["notification_enabled"] = self.notification_var.get()
             self.config["output_file"] = self.output_file_var.get()
             self.config["instructions"] = self.instructions_text.get("1.0", "end-1c")
-            self.config["window_width"] = width
-            self.config["window_height"] = height
+            self.config["window_width"] = 450
+            self.config["window_height"] = 300
             self.config["appearance_mode"] = self.appearance_var.get()
-            self.config["color_theme"] = self.color_var.get()
 
             # Save to file
             if self.config_path:
+                # Ensure parent directory exists
+                self.config_path.parent.mkdir(parents=True, exist_ok=True)
+
+                # Write config
                 with open(self.config_path, 'w') as f:
                     json.dump(self.config, f, indent=2)
                 print(f"Settings saved to: {self.config_path}")
+
+                # Verify write succeeded
+                if not self.config_path.exists():
+                    raise IOError(f"Failed to write config to {self.config_path}")
 
             # Notify parent
             self.on_save_callback(self.config)
@@ -403,24 +340,22 @@ class SettingsWindow:
 
         except Exception as e:
             print(f"Error saving settings: {e}")
+            import traceback
+            traceback.print_exc()
 
     def _on_reset(self):
         """Reset all settings to defaults."""
         # Update UI elements
         self.threshold_slider.set(DEFAULT_CONFIG["threshold"] * 100)
         self.interval_var.set(str(DEFAULT_CONFIG["update_interval"]))
-        self.always_on_top_var.set(DEFAULT_CONFIG["always_on_top"])
         self.notification_var.set(DEFAULT_CONFIG["notification_enabled"])
         self.output_file_var.set(DEFAULT_CONFIG["output_file"])
         self.instructions_text.delete("1.0", "end")
         self.instructions_text.insert("1.0", DEFAULT_CONFIG["instructions"])
         self.appearance_var.set(DEFAULT_CONFIG["appearance_mode"])
-        self.color_var.set(DEFAULT_CONFIG["color_theme"])
-        self.size_var.set("Medium (450x300)")
 
         # Apply appearance changes
         ctk.set_appearance_mode(DEFAULT_CONFIG["appearance_mode"])
-        ctk.set_default_color_theme(DEFAULT_CONFIG["color_theme"])
 
     def _on_cancel(self):
         """Close without saving."""
@@ -434,6 +369,7 @@ class ContextMonitorGUI:
         self.config_path = self._find_config_path(config_path)
         self.config = self._load_config()
 
+
         # Set appearance mode and color theme from config
         ctk.set_appearance_mode(self.config.get("appearance_mode", "dark"))
         ctk.set_default_color_theme(self.config.get("color_theme", "blue"))
@@ -441,16 +377,11 @@ class ContextMonitorGUI:
         self.root = ctk.CTk()
         self.root.title("Claude Context Monitor")
 
-        # Window configuration
-        width = self.config.get("window_width", 450)
-        height = self.config.get("window_height", 300)
-        self.root.geometry(f"{width}x{height}")
+        # Window configuration - fixed size
+        self.root.geometry("450x300")
 
         # Make window fixed-size (removes maximize button, prevents WSLg bug)
         self.root.resizable(False, False)
-
-        if self.config.get("always_on_top", True):
-            self.root.attributes('-topmost', True)
 
         # Track current session
         self.current_transcript = None
@@ -475,22 +406,17 @@ class ContextMonitorGUI:
 
     def _find_config_path(self, config_path=None):
         """Find the configuration file path."""
-        search_paths = []
+        # If explicitly specified via --config argument, use that
         if config_path:
-            search_paths.append(Path(config_path))
+            return Path(config_path)
 
-        search_paths.extend([
-            Path.cwd() / "config.json",
-            Path(__file__).parent.parent / "config.json",
-            Path.home() / ".claude" / "context-monitor-config.json"
-        ])
+        # Otherwise, always use the standard location
+        default_path = Path.home() / ".claude" / "context-monitor-config.json"
 
-        for path in search_paths:
-            if path.exists():
-                return path
+        # Ensure the directory exists
+        default_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # Return default path if none exist
-        return Path.home() / ".claude" / "context-monitor-config.json"
+        return default_path
 
     def _load_config(self):
         """Load configuration from file or use defaults."""
@@ -587,23 +513,12 @@ class ContextMonitorGUI:
 
         # Apply immediate changes
 
-        # 1. Always on top
-        self.root.attributes('-topmost', self.config.get("always_on_top", True))
+        # Appearance mode - always apply to all windows
+        appearance_mode = self.config.get("appearance_mode", "dark")
+        ctk.set_appearance_mode(appearance_mode)
+        self.root.update()  # Force refresh of main window
 
-        # 2. Window size (resize if changed)
-        new_width = self.config.get("window_width", 450)
-        new_height = self.config.get("window_height", 300)
-        old_width = old_config.get("window_width", 450)
-        old_height = old_config.get("window_height", 300)
-
-        if new_width != old_width or new_height != old_height:
-            self.root.geometry(f"{new_width}x{new_height}")
-
-        # 3. Appearance mode
-        if self.config.get("appearance_mode") != old_config.get("appearance_mode"):
-            ctk.set_appearance_mode(self.config.get("appearance_mode", "dark"))
-
-        print("Settings applied successfully! (Note: Color theme requires restart)")
+        print("Settings applied!")
 
     def _find_active_session(self):
         """Find the most recent Claude Code session transcript."""

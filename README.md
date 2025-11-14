@@ -1,28 +1,45 @@
 # Claude Context Monitor
 
-**Automatically monitor Claude Code's context window usage and take action when your threshold is reached.**
+**Never lose context again!** Automatically monitor Claude Code's context window usage in real-time with a beautiful GUI and smart background monitoring.
 
-Never lose context again! This tool monitors your Claude Code CLI sessions in real-time and automatically updates your session notes when the context window fills up, giving you seamless handoffs between sessions.
+This tool helps you work more efficiently with Claude Code CLI by keeping track of your context window usage and alerting you when it's time to clear and start fresh. Perfect for long coding sessions where context management is critical.
 
 ## ✨ Features
 
-- 🎯 **Configurable threshold** - Trigger at 80%, 90%, or any percentage you choose
-- 📝 **Custom output file** - Update `claude.md`, `CONTEXT.md`, or any file you specify
-- 🔔 **Cross-platform notifications** - Auto-detects Windows/WSL/macOS/Linux
-- ⚙️ **Fully customizable** - Configure instructions, filenames, and behavior via `config.json`
-- 🚀 **Zero maintenance** - Runs automatically in the background
-- 📊 **Activity logging** - Track context usage over time
-- 🖥️ **Optional Modern GUI** - Real-time visual display with sleek dark-mode interface and color-coded progress bar
+### Background Hook (Always Active)
+- 🎯 **Smart threshold detection** - Get notified when context reaches your limit (default 80%)
+- 📝 **Automatic session notes** - Updates your handoff file (`claude.md`) with current progress
+- 🔔 **Cross-platform notifications** - Desktop alerts on Windows, WSL, macOS, and Linux
+- 🚀 **Zero maintenance** - Runs automatically after every Claude response
+- 📊 **Activity logging** - Track context usage history
 
-## 🎬 Demo
+### Modern GUI (Optional)
+- 🖥️ **Real-time visual display** - See your context usage at a glance
+- 🎨 **Beautiful dark/light themes** - Matches your system preferences
+- 📊 **Color-coded progress** - Green → Yellow → Orange → Red as you approach the limit
+- ⚙️ **Easy settings panel** - Configure everything without editing JSON files
+- 🔄 **Live updates** - Instantly reflects changes as you work with Claude
+- 💾 **Persistent preferences** - Your settings are remembered between sessions
 
-<!-- TODO: Add screenshot or GIF of notification -->
+## 🎬 How It Works
 
-When your context reaches the configured threshold (default 80%):
-1. ✅ Your output file is automatically updated with progress notes
-2. ✅ You receive a desktop notification
-3. ✅ A marker is created to prevent duplicate alerts
-4. ✅ You run `/clear` when ready and continue with full context
+### Background Hook
+The monitoring hook runs automatically after every Claude Code response:
+1. ✅ Silently tracks your context usage in the background
+2. ✅ When you hit your threshold (default 80%), it creates/updates your handoff file
+3. ✅ Sends you a desktop notification so you know it's time to `/clear`
+4. ✅ You start fresh with full context, using the handoff notes to continue seamlessly
+
+### GUI Monitor (Optional)
+Want to see your context usage in real-time?
+```bash
+cd ~/claude-context-monitor/scripts
+python3 context-monitor-gui.py
+```
+- Watch your context fill up with a live progress bar
+- Change settings on-the-fly with the built-in settings panel
+- Switch between dark and light themes instantly
+- No need to edit config files manually!
 
 ## 📋 Requirements
 
