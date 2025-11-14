@@ -71,6 +71,10 @@ class ContextMonitorGUI:
         height = self.config.get("window_height", 250)
         self.root.geometry(f"{width}x{height}")
 
+        # Disable maximize button to prevent WSLg bug
+        self.root.resizable(True, True)  # Allow manual resizing
+        self.root.maxsize(width * 3, height * 3)  # Set reasonable max size
+
         if self.config.get("always_on_top", True):
             self.root.attributes('-topmost', True)
 
