@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 """
 Claude Code Context Monitor GUI
-Real-time visual display of context usage with color-coded progress bar.
+Real-time visual display of context usage with modern, cross-platform interface.
 
 Usage:
     python context-monitor-gui.py [--config CONFIG_PATH]
 """
 
-import tkinter as tk
-from tkinter import ttk
+import customtkinter as ctk
 import json
 import sys
 import os
@@ -36,8 +35,8 @@ DEFAULT_CONFIG = {
     "threshold": 0.80,
     "max_context_tokens": 200000,
     "update_interval": 2,  # seconds (for polling mode)
-    "window_width": 400,
-    "window_height": 250,
+    "window_width": 450,
+    "window_height": 300,
     "always_on_top": True
 }
 
@@ -63,12 +62,17 @@ class ContextMonitorGUI:
 
     def __init__(self, config_path=None):
         self.config = self._load_config(config_path)
-        self.root = tk.Tk()
+
+        # Set appearance mode and color theme
+        ctk.set_appearance_mode("dark")  # Modes: "System", "Dark", "Light"
+        ctk.set_default_color_theme("blue")  # Themes: "blue", "green", "dark-blue"
+
+        self.root = ctk.CTk()
         self.root.title("Claude Context Monitor")
 
         # Window configuration
-        width = self.config.get("window_width", 400)
-        height = self.config.get("window_height", 250)
+        width = self.config.get("window_width", 450)
+        height = self.config.get("window_height", 300)
         self.root.geometry(f"{width}x{height}")
 
         # Make window fixed-size (removes maximize button, prevents WSLg bug)
@@ -92,7 +96,7 @@ class ContextMonitorGUI:
         if self.current_transcript:
             self._start_monitoring()
         else:
-            self.status_label.config(text="⚠️ No active Claude session found")
+            self.status_label.configure(text="⚠️ No active Claude session found")
 
         # Handle window close
         self.root.protocol("WM_DELETE_WINDOW", self._on_closing)
@@ -125,57 +129,55 @@ class ContextMonitorGUI:
         return config
 
     def _build_ui(self):
-        """Build the GUI interface."""
-        # Main frame
-        main_frame = ttk.Frame(self.root, padding="20")
-        main_frame.pack(fill=tk.BOTH, expand=True)
+        """Build the modern GUI interface."""
+        # Main frame with padding
+        main_frame = ctk.CTkFrame(self.root, corner_radius=0, fg_color="transparent")
+        main_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
         # Title
-        title = ttk.Label(
+        title = ctk.CTkLabel(
             main_frame,
             text="Claude Code Context Monitor",
-            font=("Arial", 12, "bold")
+            font=ctk.CTkFont(size=18, weight="bold")
         )
-        title.pack(pady=(0, 15))
+        title.pack(pady=(0, 20))
 
-        # Percentage display
-        self.percentage_label = ttk.Label(
+        # Percentage display with large font
+        self.percentage_label = ctk.CTkLabel(
             main_frame,
             text="Context: 0.0%",
-            font=("Arial", 20, "bold"),
-            foreground="#4CAF50"
+            font=ctk.CTkFont(size=32, weight="bold"),
+            text_color="#4CAF50"
         )
-        self.percentage_label.pack(pady=(0, 10))
+        self.percentage_label.pack(pady=(0, 15))
 
-        # Progress bar
-        self.progress = ttk.Progressbar(
+        # Progress bar (modern style)
+        self.progress = ctk.CTkProgressBar(
             main_frame,
-            length=350,
-            maximum=100,
-            mode='determinate'
+            width=400,
+            height=20,
+            corner_radius=10,
+            progress_color="#4CAF50"
         )
-        self.progress.pack(pady=(0, 15))
+        self.progress.set(0)
+        self.progress.pack(pady=(0, 20))
 
         # Token count
-        self.tokens_label = ttk.Label(
+        self.tokens_label = ctk.CTkLabel(
             main_frame,
             text="0 / 200,000 tokens",
-            font=("Arial", 10)
+            font=ctk.CTkFont(size=13)
         )
-        self.tokens_label.pack(pady=(0, 5))
+        self.tokens_label.pack(pady=(0, 10))
 
-        # Status
-        self.status_label = ttk.Label(
+        # Status indicator with icon
+        self.status_label = ctk.CTkLabel(
             main_frame,
             text="● Initializing...",
-            font=("Arial", 9),
-            foreground="#666666"
+            font=ctk.CTkFont(size=11),
+            text_color="#666666"
         )
         self.status_label.pack(pady=(10, 0))
-
-        # Configure progress bar style
-        style = ttk.Style()
-        style.theme_use('default')
 
     def _find_active_session(self):
         """Find the most recent Claude Code session transcript."""
@@ -268,32 +270,37 @@ class ContextMonitorGUI:
 
         # Update percentage label
         percentage = usage['percentage']
-        self.percentage_label.config(text=f"Context: {percentage:.1f}%")
+        self.percentage_label.configure(text=f"Context: {percentage:.1f}%")
 
-        # Update progress bar
-        self.progress['value'] = percentage
+        # Update progress bar (value between 0 and 1)
+        self.progress.set(percentage / 100)
 
         # Update token count
         total = usage['total_tokens']
         max_tokens = self.config["max_context_tokens"]
-        self.tokens_label.config(text=f"{total:,} / {max_tokens:,} tokens")
+        self.tokens_label.configure(text=f"{total:,} / {max_tokens:,} tokens")
 
         # Color coding based on usage
         if percentage >= 95:
             color = '#F44336'  # Red
+            progress_color = '#F44336'
             status = "● Critical - Clear soon!"
         elif percentage >= 85:
             color = '#FF9800'  # Orange
+            progress_color = '#FF9800'
             status = "● High - Approaching limit"
         elif percentage >= 70:
             color = '#FFC107'  # Yellow/Amber
+            progress_color = '#FFC107'
             status = "● Moderate"
         else:
             color = '#4CAF50'  # Green
+            progress_color = '#4CAF50'
             status = "● Normal"
 
-        self.percentage_label.config(foreground=color)
-        self.status_label.config(text=status, foreground=color)
+        self.percentage_label.configure(text_color=color)
+        self.progress.configure(progress_color=progress_color)
+        self.status_label.configure(text=status, text_color=color)
 
         # Update window title with percentage
         self.root.title(f"Claude Context - {percentage:.0f}%")
@@ -316,7 +323,7 @@ class ContextMonitorGUI:
                 recursive=False
             )
             self.observer.start()
-            self.status_label.config(text="● Monitoring (real-time)")
+            self.status_label.configure(text="● Monitoring (real-time)")
             print("Started watchdog monitoring")
         except Exception as e:
             print(f"Error starting watchdog: {e}")
@@ -327,7 +334,7 @@ class ContextMonitorGUI:
         interval = self.config.get("update_interval", 2) * 1000  # Convert to ms
         self._poll_update()
         self.root.after(interval, self._poll_loop)
-        self.status_label.config(text="● Monitoring (polling)")
+        self.status_label.configure(text="● Monitoring (polling)")
         print(f"Started polling monitoring (every {interval/1000}s)")
 
     def _poll_loop(self):

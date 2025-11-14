@@ -1,5 +1,8 @@
 # Optional dependencies for GUI version
 # Install with: pip install -r requirements-gui.txt
 
+# Modern GUI framework
+customtkinter>=5.2.0
+
 # File monitoring for real-time updates
 watchdog>=3.0.0

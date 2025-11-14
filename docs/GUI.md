@@ -5,27 +5,29 @@ Complete guide to using the Claude Context Monitor GUI.
 ## Overview
 
 The GUI provides real-time visual monitoring of Claude Code context usage with:
-- Color-coded progress bar
+- **Modern, dark-mode interface** (CustomTkinter framework)
+- Color-coded progress bar with smooth animations
 - Live token counts
-- Percentage display
+- Large, easy-to-read percentage display
 - Always-on-top window option
+- Cross-platform consistent appearance
 
 ## Installation
 
 ### Prerequisites
 
 - Python 3.8+
-- tkinter (usually included with Python)
+- CustomTkinter (modern GUI framework)
 - watchdog library (for real-time updates)
 
 ### Setup
 
 ```bash
-# Install GUI dependency
+# Install all GUI dependencies
 pip install -r requirements-gui.txt
 
-# Or install watchdog directly
-pip install watchdog
+# Or install individually
+pip install customtkinter watchdog
 ```
 
 ## Running the GUI
@@ -164,7 +166,16 @@ Launch the GUI only when you want to check context usage, close when done.
 
 ### GUI Won't Start
 
-**tkinter not found:**
+**CustomTkinter not found:**
+```bash
+# Install CustomTkinter
+pip install customtkinter
+
+# Or use the requirements file
+pip install -r requirements-gui.txt
+```
+
+**tkinter not found (backend dependency):**
 ```bash
 # Ubuntu/Debian
 sudo apt-get install python3-tk
@@ -235,7 +246,21 @@ The GUI automatically tracks the most recently active session. If you switch bet
 
 ### Custom Styling
 
-The GUI uses ttk (themed tkinter). To customize colors/fonts, edit the `_build_ui()` method in `context-monitor-gui.py`.
+The GUI uses CustomTkinter with a modern dark theme. You can customize:
+
+**Appearance Mode:**
+Edit line 67 in `context-monitor-gui.py`:
+```python
+ctk.set_appearance_mode("dark")  # Options: "dark", "light", "system"
+```
+
+**Color Theme:**
+Edit line 68 in `context-monitor-gui.py`:
+```python
+ctk.set_default_color_theme("blue")  # Options: "blue", "green", "dark-blue"
+```
+
+For advanced customization, edit the `_build_ui()` method to change fonts, colors, and layout.
 
 ### Headless Mode
 
@@ -274,7 +299,7 @@ No custom shortcuts currently (could be added if desired).
 A: No, they're complementary. The hook handles automated alerts, the GUI provides visual monitoring.
 
 **Q: Can I resize the window?**
-A: Yes, the window is fully resizable. Your preferred size can be set in `config.json`.
+A: The window is fixed-size to prevent WSLg window manager issues. You can customize the size by setting `window_width` and `window_height` in your `config.json`.
 
 **Q: Does it work with multiple Claude Code instances?**
 A: It tracks the most recently active session. For multiple instances, consider running multiple GUI instances with different configs.

@@ -12,7 +12,7 @@ Never lose context again! This tool monitors your Claude Code CLI sessions in re
 - ⚙️ **Fully customizable** - Configure instructions, filenames, and behavior via `config.json`
 - 🚀 **Zero maintenance** - Runs automatically in the background
 - 📊 **Activity logging** - Track context usage over time
-- 🖥️ **Optional GUI** - Real-time visual display with color-coded progress bar
+- 🖥️ **Optional Modern GUI** - Real-time visual display with sleek dark-mode interface and color-coded progress bar
 
 ## 🎬 Demo
 
@@ -155,12 +155,12 @@ The hook is configured in `.claude/settings.json`:
 
 ## 🖥️ GUI Mode (Optional)
 
-For real-time visual monitoring, you can run the optional GUI:
+For real-time visual monitoring, you can run the optional modern GUI with a sleek dark-mode interface:
 
 ### Installation
 
 ```bash
-# Install GUI dependency
+# Install GUI dependencies (CustomTkinter + watchdog)
 pip install -r requirements-gui.txt
 
 # Run the GUI
@@ -169,10 +169,13 @@ python scripts/context-monitor-gui.py
 
 ### Features
 
+- **Modern dark-mode interface** - Sleek, professional CustomTkinter design
 - **Real-time updates** - Updates automatically as you work with Claude Code
+- **Cross-platform consistency** - Looks identical on Windows, macOS, and Linux
 - **Always-on-top** - Window stays visible above other applications
 - **Color-coded display** - Green → Yellow → Orange → Red as context fills
-- **Progress bar** - Visual representation of context usage
+- **Smooth animations** - Polished progress bar with dynamic color changes
+- **Large, readable text** - Easy-to-read percentage and token counts
 - **Token breakdown** - See exact token counts
 
 ### GUI Configuration
@@ -181,8 +184,8 @@ The GUI uses the same `config.json` as the hook. Additional GUI-specific options
 
 ```json
 {
-  "window_width": 400,
-  "window_height": 250,
+  "window_width": 450,
+  "window_height": 300,
   "always_on_top": true,
   "update_interval": 2
 }
